@@ -12,25 +12,25 @@ class set(get):
         self.screen = pygame.display.set_mode((self.screen_width, self.screen_height))
         
         # 노래 및 효과음
-        self.star_music = pygame.mixer.Sound("first_copy/image/Sound/별똥별.mp3")
-        self.next_key = pygame.mixer.Sound("first_copy/image/Sound/MP_핑거스냅 1.mp3")
-        self.river_music = pygame.mixer.Sound("first_copy/image/Sound/한적한 감성 카페.mp3")
-        self.key_down_sound = pygame.mixer.Sound("first_copy/image/Sound/keydown_button.mp3")
-        self.key_up_sound = pygame.mixer.Sound("first_copy/image/Sound/keyup_button.mp3")
+        self.star_music = pygame.mixer.Sound("image/Sound/별똥별.mp3")
+        self.next_key = pygame.mixer.Sound("image/Sound/MP_핑거스냅 1.mp3")
+        self.river_music = pygame.mixer.Sound("image/Sound/한적한 감성 카페.mp3")
+        self.key_down_sound = pygame.mixer.Sound("image/Sound/keydown_button.mp3")
+        self.key_up_sound = pygame.mixer.Sound("image/Sound/keyup_button.mp3")
 
         # start_버튼 이미지
-        self.start_load = pygame.image.load("first_copy/image/start_load.png")
-        self.start_msg = pygame.image.load("first_copy/image/start_msg.png")
+        self.start_load = pygame.image.load("image/start_load.png")
+        self.start_msg = pygame.image.load("image/start_msg.png")
 
         # 메뉴 스크린 주소
-        self.menu_screen0_img = pygame.image.load("first_copy/image/background0.png")    # discript
-        self.menu_screen1_img = pygame.image.load("first_copy/image/background1.png")    # start
-        self.menu_screen2_img = pygame.image.load("first_copy/image/background2.png")    # exit
+        self.menu_screen0_img = pygame.image.load("image/background0.png")    # discript
+        self.menu_screen1_img = pygame.image.load("image/background1.png")    # start
+        self.menu_screen2_img = pygame.image.load("image/background2.png")    # exit
 
         # 메뉴 버튼 이미지
-        self.left_mani = pygame.image.load("first_copy/image/menu0.png")    # 좌클릭 시
-        self.mani = pygame.image.load("first_copy/image/menu1.png")
-        self.right_mani = pygame.image.load("first_copy/image/menu2.png")    # 우클릭 시
+        self.left_mani = pygame.image.load("image/menu0.png")    # 좌클릭 시
+        self.mani = pygame.image.load("image/menu1.png")
+        self.right_mani = pygame.image.load("image/menu2.png")    # 우클릭 시
 
         self.key_press = 1
 
@@ -45,7 +45,7 @@ class set(get):
         self.r.center_pos(r_indi_center)
 
         # 설명서 이미지
-        self.instruction = pygame.image.load("first_copy/image/instruction.png")
+        self.instruction = pygame.image.load("image/instruction.png")
     
         # 색깔
         self.black = (0, 0, 0) # 검정

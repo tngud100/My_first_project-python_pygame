@@ -7,28 +7,28 @@ class g2(var):
     def __init__(self, screen, screen_width, screen_height, state, click_pos):
         super().__init__(screen, screen_width, screen_height, state, click_pos)
         # 외부에서 가져와야될 이미지 및 파일
-        self.ready_nomal = pygame.image.load("first_copy/image/ready_screen_nomal.png") # ready_screen_draw 배경
-        self.ready_easy = pygame.image.load("first_copy/image/ready_screen_easy.png") # ready_screen_draw 배경
-        self.ready_hard = pygame.image.load("first_copy/image/ready_screen_hard.png") # ready_screen_draw 배경
-        self.ingame_background = pygame.image.load("first_copy/image/ingame_screen.png")# ingame 배경
-        self.game_over_background1 = pygame.image.load("first_copy/image/game_over_screen_no.png")# game_over 배경
-        self.game_over_background2 = pygame.image.load("first_copy/image/game_over_screen_yes.png")# game_over 배경
-        self.nomal_note = pygame.image.load("first_copy/image/nomal_note.png")
-        self.side_note = pygame.image.load("first_copy/image/side_note.png")
-        self.note_pad = pygame.image.load("first_copy/image/note_pad.png") # 노트패드
-        self.nomal_note_pad = pygame.image.load("first_copy/image/nomal_note_pad.png") # 노말 노트를 맞추는 패드
-        self.side_note_pad = pygame.image.load("first_copy/image/side_note_pad.png") # 사이드 노트를 맞추는 패드
-        self.pad_line = pygame.image.load("first_copy/image/pad_line.png") # 패드라인
-        self.red_line = pygame.image.load("first_copy/image/red_line.png")
-        self.exerlent_img = pygame.image.load("first_copy/image/Exerlent.png")
-        self.good_img = pygame.image.load("first_copy/image/good.png")
-        self.bad_img = pygame.image.load("first_copy/image/bad.png")
+        self.ready_nomal = pygame.image.load("image/ready_screen_nomal.png") # ready_screen_draw 배경
+        self.ready_easy = pygame.image.load("image/ready_screen_easy.png") # ready_screen_draw 배경
+        self.ready_hard = pygame.image.load("image/ready_screen_hard.png") # ready_screen_draw 배경
+        self.ingame_background = pygame.image.load("image/ingame_screen.png")# ingame 배경
+        self.game_over_background1 = pygame.image.load("image/game_over_screen_no.png")# game_over 배경
+        self.game_over_background2 = pygame.image.load("image/game_over_screen_yes.png")# game_over 배경
+        self.nomal_note = pygame.image.load("image/nomal_note.png")
+        self.side_note = pygame.image.load("image/side_note.png")
+        self.note_pad = pygame.image.load("image/note_pad.png") # 노트패드
+        self.nomal_note_pad = pygame.image.load("image/nomal_note_pad.png") # 노말 노트를 맞추는 패드
+        self.side_note_pad = pygame.image.load("image/side_note_pad.png") # 사이드 노트를 맞추는 패드
+        self.pad_line = pygame.image.load("image/pad_line.png") # 패드라인
+        self.red_line = pygame.image.load("image/red_line.png")
+        self.exerlent_img = pygame.image.load("image/Exerlent.png")
+        self.good_img = pygame.image.load("image/good.png")
+        self.bad_img = pygame.image.load("image/bad.png")
 
 
-        self.music = pygame.mixer.music.load("first_copy/image/Sound/빠른 비트.mp3") # ingame 노래
-        self.rhythm_start = pygame.mixer.Sound("first_copy/image/Sound/Dj 스크레치.mp3")
-        # self.kick_sound = pygame.mixer.Sound("first_copy/image/Sound/귀여운 퍽.mp3")
-        # self.high_edge_sound = pygame.mixer.Sound("first_copy/image/Sound/MP_슬레이트 치기.mp3")
+        self.music = pygame.mixer.music.load("image/Sound/빠른 비트.mp3") # ingame 노래
+        self.rhythm_start = pygame.mixer.Sound("image/Sound/Dj 스크레치.mp3")
+        # self.kick_sound = pygame.mixer.Sound("image/Sound/귀여운 퍽.mp3")
+        # self.high_edge_sound = pygame.mixer.Sound("image/Sound/MP_슬레이트 치기.mp3")
         
         # note
         self.note_list = [] # 노트가 들어가 있는 변수
