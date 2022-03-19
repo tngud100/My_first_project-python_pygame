@@ -62,6 +62,8 @@ class g2(var):
         self.approximate = 200 # good을 받을 수 있는 +- 값
         self.Exerlent_range = [self.note_pad_y_pos - self.p.object_height, self.note_pad_y_pos + self.p.object_height / 2]
         self.score_state = 0 # 1 = Exer, 2 = good, 3 = bad
+        self.note_sequence_list = [0]
+        self.m = 0
         self.Exerlent = 0
         self.good = 0
         self.bad = 0
@@ -153,7 +155,7 @@ class g2(var):
                         if self.screen_state == 1: 
                             self.key_press[3] = 1
                             self.Score()
-                    print(self.event.key)
+                    # print(self.event.key)
                       
                 
                 if self.event.type == pygame.KEYUP:
@@ -199,7 +201,11 @@ class g2(var):
         self.beat_time_list = []
         self.note_y_pos = []
         self.note_list = []
+        self.note_sequence_list = [0]
         self.i = 0
+        self.bad = 0
+        self.good = 0
+        self.Exerlent = 0
 
 
     def ingame_draw(self):
@@ -242,6 +248,7 @@ class g2(var):
             self.screen.blit(self.good_img, (self.note2_x_pos + 50, 100))
         if self.score_state == 3:
             self.screen.blit(self.bad_img, (self.note2_x_pos + 50, 100))
+        
 
         # 비트시간초를 지나면 노트 y값 넘겨주면서 다음 노트 그리기
         if self.note_count[0] <= len(self.note_list) - 5:
@@ -266,18 +273,21 @@ class g2(var):
                 self.bad_score(0)
                 self.note_count[1] = self.note_count[0]
                 self.note_count[0] = self.note_count[0] + 1
+                self.note_sequence_list.append(self.note_y_pos[self.m])   # 노트가 생길 때 마다 리스트에 변수 추가
+                self.m += 1
+                
             # 비트시간초 지나기 전에 떨어지는 노트 그리기
             if self.time1 <= self.beat_time_list[self.note_count[0]]:
                 self.auto_draw(self.note_count[0])
-                # if self.time1 > self.beat_time_list[self.note_count[1]]: # 2번째 노트(노트 스피드가 2배가 되는것을 방지)
-                self.auto_draw(self.note_count[1])
-                # if self.time1 > self.beat_time_list[self.note_count[2]]: # 3번째 노트(노트 스피드가 2배가 되는것을 방지)
-                self.auto_draw(self.note_count[2])
-                    # if self.time1 > self.part_time[1]:
-                self.auto_draw(self.note_count[3])
-                self.auto_draw(self.note_count[4])
-                self.auto_draw(self.note_count[5])
-                self.auto_draw(self.note_count[6])
+                if self.time1 > self.beat_time_list[self.note_count[1]]: # 2번째 노트(노트 스피드가 2배가 되는것을 방지)
+                    self.auto_draw(self.note_count[1])
+                if self.time1 > self.beat_time_list[self.note_count[2]]: # 3번째 노트(노트 스피드가 2배가 되는것을 방지)
+                    self.auto_draw(self.note_count[2])
+                    self.auto_draw(self.note_count[3])
+                    if self.time1 > self.part_time[1]:
+                        self.auto_draw(self.note_count[4])
+                        self.auto_draw(self.note_count[5])
+                        self.auto_draw(self.note_count[6])
 
         else:
             self.auto_draw(self.note_count[0])
@@ -288,9 +298,12 @@ class g2(var):
             self.auto_draw(self.note_count[5])
             self.auto_draw(self.note_count[6])
         
+            
+        print(self.note_sequence_list)
+        print(self.m)
         # print(self.note_count)
         # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
-        # print(self.note_y_pos)
+        print(self.note_y_pos)
         # print(self.bad)
         # print(self.erase)
 
@@ -312,60 +325,41 @@ class g2(var):
                             if 0 < self.note_y_pos[self.note_count[5]] <= self.screen_height:
                                 if 0 < self.note_y_pos[self.note_count[6]] <= self.screen_height:    
                                     m = 6
-                                    self.score_range(m, 0)
-                                    self.score_range(m, 1)
-                                    self.score_range(m, 2)
-                                    self.score_range(m, 3)
+                                    for i in range(0,4):
+                                        self.score_range(m, i)
                                 m = 5
-                                self.score_range(m, 0)
-                                self.score_range(m, 1)
-                                self.score_range(m, 2)
-                                self.score_range(m, 3)
+                                for i in range(0,4):
+                                    self.score_range(m, i)
                             m = 4
-                            self.score_range(m, 0)
-                            self.score_range(m, 1)
-                            self.score_range(m, 2)
-                            self.score_range(m, 3)
+                            for i in range(0,4):
+                                self.score_range(m, i)
                         m = 3
-                        self.score_range(m, 0)
-                        self.score_range(m, 1)
-                        self.score_range(m, 2)
-                        self.score_range(m, 3)
+                        for i in range(0,4):
+                            self.score_range(m, i)
                     m = 2
-                    self.score_range(m, 0)
-                    self.score_range(m, 1)
-                    self.score_range(m, 2)
-                    self.score_range(m, 3)
+                    for i in range(0,4):
+                        self.score_range(m, i)
                 m = 1
-                self.score_range(m, 0)
-                self.score_range(m, 1)
-                self.score_range(m, 2)
-                self.score_range(m, 3)
+                for i in range(0,4):
+                    self.score_range(m, i)
             m = 0
-            self.score_range(m, 0)
-            self.score_range(m, 1)
-            self.score_range(m, 2)
-            self.score_range(m, 3)
+            for i in range(0,4):
+                self.score_range(m, i)
 
-        print("Exerlent = "+ str(self.Exerlent))
-        print("good = "+ str(self.good))
-        print("bad = "+ str(self.bad))
-        print("erase = "+ str(self.erase))
+        # print("Exerlent = "+ str(self.Exerlent))
+        # print("good = "+ str(self.good))
+        # print("bad = "+ str(self.bad))
+        # print("erase = "+ str(self.erase))
         # print("m = " + str(m))
         # print(self.note_count)
         # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
     
 
     def bad_score(self, m):
-        if self.erase == 1:
-            if self.note_y_pos[self.note_count[m]] > self.Exerlent_range[1]:
-                self.erase = 0
-        if self.erase == 0:
-            if self.note_y_pos[self.note_count[m]] >= self.Exerlent_range[1]:
-                self.score_state = 3
-                self.bad += 1
-                # if self.note_y_pos[self.note_count[m]] >= self.screen_height:
-
+        if self.note_y_pos[self.note_count[m]] >= self.screen_height:
+            self.bad += 1
+            # self.score_state = 3
+            
     def score_range(self, m, k):
         if k == 0:
             if self.note_list[self.note_count[m]][k] == self.note_state:
@@ -427,17 +421,16 @@ class g2(var):
                         self.score_state = 2
     # 노트 그리기 함수화
     def auto_draw(self, j):
-        if self.erase == 0:
-            if self.note_y_pos[j] <=  self.screen_height: 
-                if self.note_list[j][0] == self.note_state:
-                    self.screen.blit(self.side_note, (self.note1_x_pos, self.note_y_pos[j]))
-                if self.note_list[j][1] == self.note_state:
-                    self.screen.blit(self.nomal_note, (self.note2_x_pos, self.note_y_pos[j]))
-                if self.note_list[j][2] == self.note_state:
-                    self.screen.blit(self.nomal_note, (self.note3_x_pos, self.note_y_pos[j]))
-                if self.note_list[j][3] == self.note_state:
-                    self.screen.blit(self.side_note, (self.note4_x_pos, self.note_y_pos[j]))
-                self.note_y_pos[j] += self.note_speed
+        if self.note_y_pos[j] <=  self.screen_height: 
+            if self.note_list[j][0] == self.note_state:
+                self.screen.blit(self.side_note, (self.note1_x_pos, self.note_y_pos[j]))
+            if self.note_list[j][1] == self.note_state:
+                self.screen.blit(self.nomal_note, (self.note2_x_pos, self.note_y_pos[j]))
+            if self.note_list[j][2] == self.note_state:
+                self.screen.blit(self.nomal_note, (self.note3_x_pos, self.note_y_pos[j]))
+            if self.note_list[j][3] == self.note_state:
+                self.screen.blit(self.side_note, (self.note4_x_pos, self.note_y_pos[j]))
+            self.note_y_pos[j] += self.note_speed
  
     def music_sheet(self, part_beat):
         self.part_beat = part_beat
