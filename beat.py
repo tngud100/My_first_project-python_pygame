@@ -84,7 +84,7 @@ class g2(var):
         self.screen_state = 0 # 준비 화면, 1 = 게임중, 2 = 게임 오버
         self.start_time = 0 # 시작 시간
         # 리스트별 인덱스 카운트, 화면에 동시 존재 할 수 있는 노트가 최대 count(note_count)만큼 나옴
-        self.note_count = [0,0,0,0,0,0]
+        self.note_count = [0,0,0,0,0,0,0,0]
         self.frame = pygame.time.Clock() # 프레임설정
         self.over_state = 0
         self.time = 0
@@ -196,12 +196,13 @@ class g2(var):
         if self.difficulty == 2:
             self.screen.blit(self.ready_hard, (0,0))
             self.part_beat = [0.5, 0.4, 0.3, 0.15]
-        self.note_count = [0,0,0,0,0,0,0]
+        self.note_count = [0,0,0,0,0,0,0,0]
         self.beat = [0,0,0,0,0,0,0]
         self.beat_time_list = []
         self.note_y_pos = []
         self.note_list = []
         self.note_sequence_list = [0]
+        self.m = 0
         self.i = 0
         self.bad = 0
         self.good = 0
@@ -258,10 +259,13 @@ class g2(var):
                         if self.time1 >= self.beat_time_list[self.note_count[3]]:
                             if self.time1 >= self.beat_time_list[self.note_count[4]]:
                                 if self.time1 >= self.beat_time_list[self.note_count[5]]:
+                                    if self.time1 >= self.beat_time_list[self.note_count[6]]:
+                                        self.bad_score(6)
+                                        self.note_count[7] = self.note_count[6]
+                                        self.bad_score(7)
                                     # bad_score 계산
                                     self.bad_score(5)
                                     self.note_count[6] = self.note_count[5]
-                                    self.bad_score(6)
                                 self.bad_score(4)
                                 self.note_count[5] = self.note_count[4]
                             self.bad_score(3)
@@ -273,7 +277,7 @@ class g2(var):
                 self.bad_score(0)
                 self.note_count[1] = self.note_count[0]
                 self.note_count[0] = self.note_count[0] + 1
-                self.note_sequence_list.append(self.note_y_pos[self.m])   # 노트가 생길 때 마다 리스트에 변수 추가
+                self.note_sequence_list.append(0)   # 노트가 생길 때 마다 리스트에 변수 추가
                 self.m += 1
                 
             # 비트시간초 지나기 전에 떨어지는 노트 그리기
@@ -288,6 +292,7 @@ class g2(var):
                         self.auto_draw(self.note_count[4])
                         self.auto_draw(self.note_count[5])
                         self.auto_draw(self.note_count[6])
+                        self.auto_draw(self.note_count[7])
 
         else:
             self.auto_draw(self.note_count[0])
@@ -297,11 +302,34 @@ class g2(var):
             self.auto_draw(self.note_count[4])
             self.auto_draw(self.note_count[5])
             self.auto_draw(self.note_count[6])
+            self.auto_draw(self.note_count[7])
         
-            
-        print(self.note_sequence_list)
+        if self.note_sequence_list[0] <= self.screen_height:
+            self.note_sequence_list[0] += self.note_speed
+
+        if len(self.note_sequence_list) >= 2:
+            if len(self.note_sequence_list) >= 3:
+                if len(self.note_sequence_list) >= 4:
+                    if len(self.note_sequence_list) >= 5:
+                        if len(self.note_sequence_list) >= 6:
+                            if len(self.note_sequence_list) >= 7:
+                                if self.note_sequence_list[self.m - 6] <= self.screen_height:
+                                    self.note_sequence_list[self.m - 6] += self.note_speed
+                            if self.note_sequence_list[self.m - 5] <= self.screen_height:
+                                self.note_sequence_list[self.m - 5] += self.note_speed
+                        if self.note_sequence_list[self.m - 4] <= self.screen_height:
+                            self.note_sequence_list[self.m - 4] += self.note_speed
+                    if self.note_sequence_list[self.m - 3] <= self.screen_height:
+                        self.note_sequence_list[self.m - 3] += self.note_speed
+                if self.note_sequence_list[self.m - 2] <= self.screen_height:
+                    self.note_sequence_list[self.m - 2] += self.note_speed
+            if self.note_sequence_list[self.m] <= self.screen_height:
+                self.note_sequence_list[self.m] += self.note_speed
+            if self.note_sequence_list[self.m - 1] <= self.screen_height:
+                self.note_sequence_list[self.m - 1] += self.note_speed
         print(self.m)
-        # print(self.note_count)
+        print(self.note_count)
+        print(self.note_sequence_list)
         # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
         print(self.note_y_pos)
         # print(self.bad)
@@ -361,6 +389,7 @@ class g2(var):
             # self.score_state = 3
             
     def score_range(self, m, k):
+        # if len(self.note_sequence_list[m]) < 
         if k == 0:
             if self.note_list[self.note_count[m]][k] == self.note_state:
                 # Exerlent
