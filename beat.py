@@ -30,6 +30,12 @@ class g2(var):
         # self.kick_sound = pygame.mixer.Sound("image/Sound/귀여운 퍽.mp3")
         # self.high_edge_sound = pygame.mixer.Sound("image/Sound/MP_슬레이트 치기.mp3")
         
+        # 폰트
+        self.combo_font = pygame.font.Font(None, 120)
+
+        # 색깔
+        self.White = (255, 255, 255)
+
         # note
         self.note_list = [] # 노트가 들어가 있는 변수
         self.note_grid = [0,0,0,0] # 노트가 생길 수 있는 칸 
@@ -59,14 +65,16 @@ class g2(var):
 
         # Score 변수
         self.erase = 0  # 맞춘 노트패드 지우기
-        self.approximate = 200 # good을 받을 수 있는 +- 값
-        self.Exerlent_range = [self.note_pad_y_pos - self.p.object_height, self.note_pad_y_pos + self.p.object_height / 2]
+        self.approximate = 60 # good을 받을 수 있는 +- 값
+        self.Exerlent_range = [self.note_pad_y_pos - self.p.object_height, self.note_pad_y_pos]
         self.score_state = 0 # 1 = Exer, 2 = good, 3 = bad
-        self.note_sequence_list = [0]
-        self.m = 0
+        self.note_sequence_list = [0]   # 노트가 생성될 때 노트의 높이를 저장 하는 리스트
+        self.m = 0  # sequence_list 변수가 append 할 수 있도록 해주는 변수
+        self.h = 0  # 점수 로직을 위한 count변수
         self.Exerlent = 0
         self.good = 0
         self.bad = 0
+        self.score = 0
 
         # beat
         self.whole_time = 78 # 노래 전체 시간
@@ -142,20 +150,20 @@ class g2(var):
                     if self.event.key == pygame.K_d:
                         if self.screen_state == 1:
                             self.key_press[0] = 1
-                            self.Score()   
+                            self.Score(0)   
                     if self.event.key == pygame.K_f:
                         if self.screen_state == 1:
                             self.key_press[1] = 1
-                            self.Score()      
+                            self.Score(1)      
                     if self.event.key == pygame.K_j:
                         if self.screen_state == 1: 
                             self.key_press[2] = 1
-                            self.Score()    
+                            self.Score(2)    
                     if self.event.key == pygame.K_k:
                         if self.screen_state == 1: 
                             self.key_press[3] = 1
-                            self.Score()
-                    # print(self.event.key)
+                            self.Score(3)
+                    print(self.key_press)
                       
                 
                 if self.event.type == pygame.KEYUP:
@@ -203,11 +211,12 @@ class g2(var):
         self.note_list = []
         self.note_sequence_list = [0]
         self.m = 0
+        self.h = 0
         self.i = 0
         self.bad = 0
         self.good = 0
         self.Exerlent = 0
-
+        self.score = 0
 
     def ingame_draw(self):
         self.time = (pygame.time.get_ticks() - self.start_time)/ 1000
@@ -225,7 +234,6 @@ class g2(var):
         pygame.draw.circle(self.screen, (255, 255, 255), (self.screen_width/2,self.Exerlent_range[0]),5,5)
         pygame.draw.circle(self.screen, (255, 255, 255), (self.screen_width/2,self.Exerlent_range[1]),5,5)
 
-        # if self.key_press == [0,0,0,0]:
         # 노트 라인 그리기
         if self.key_press[0] == 1:
             self.screen.blit(self.pad_line, (self.note1_x_pos, 10))
@@ -240,6 +248,11 @@ class g2(var):
             self.screen.blit(self.pad_line, (self.note4_x_pos, 10))
             self.p.blit(self.screen, self.side_note_pad)
         
+        # 점수 콤보 그리기
+        cell_text = self.combo_font.render(str(self.score), True, self.White)
+        text_rect = cell_text.get_rect(center = (self.screen_width / 2, 200))
+        self.screen.blit(cell_text, text_rect)
+
         # 점수 현황 그리기
         if self.score_state == 0:
             pass
@@ -260,21 +273,12 @@ class g2(var):
                             if self.time1 >= self.beat_time_list[self.note_count[4]]:
                                 if self.time1 >= self.beat_time_list[self.note_count[5]]:
                                     if self.time1 >= self.beat_time_list[self.note_count[6]]:
-                                        self.bad_score(6)
                                         self.note_count[7] = self.note_count[6]
-                                        self.bad_score(7)
-                                    # bad_score 계산
-                                    self.bad_score(5)
                                     self.note_count[6] = self.note_count[5]
-                                self.bad_score(4)
                                 self.note_count[5] = self.note_count[4]
-                            self.bad_score(3)
                             self.note_count[4] = self.note_count[3]
-                        self.bad_score(2)
                         self.note_count[3] = self.note_count[2]
-                    self.bad_score(1)
                     self.note_count[2] = self.note_count[1]
-                self.bad_score(0)
                 self.note_count[1] = self.note_count[0]
                 self.note_count[0] = self.note_count[0] + 1
                 self.note_sequence_list.append(0)   # 노트가 생길 때 마다 리스트에 변수 추가
@@ -304,15 +308,19 @@ class g2(var):
             self.auto_draw(self.note_count[6])
             self.auto_draw(self.note_count[7])
         
+
+        # 노트들이 나오는 순서대로 리스트에 append 후, y_pos를 저장
         if self.note_sequence_list[0] <= self.screen_height:
             self.note_sequence_list[0] += self.note_speed
-
         if len(self.note_sequence_list) >= 2:
             if len(self.note_sequence_list) >= 3:
                 if len(self.note_sequence_list) >= 4:
                     if len(self.note_sequence_list) >= 5:
                         if len(self.note_sequence_list) >= 6:
                             if len(self.note_sequence_list) >= 7:
+                                if len(self.note_sequence_list) >= 8:
+                                    if self.note_sequence_list[self.m - 7] <= self.screen_height:
+                                        self.note_sequence_list[self.m - 7] += self.note_speed
                                 if self.note_sequence_list[self.m - 6] <= self.screen_height:
                                     self.note_sequence_list[self.m - 6] += self.note_speed
                             if self.note_sequence_list[self.m - 5] <= self.screen_height:
@@ -327,12 +335,22 @@ class g2(var):
                 self.note_sequence_list[self.m] += self.note_speed
             if self.note_sequence_list[self.m - 1] <= self.screen_height:
                 self.note_sequence_list[self.m - 1] += self.note_speed
-        print(self.m)
-        print(self.note_count)
+            
+        # bad score
+        if self.h < len(self.note_sequence_list)- 1:
+            if self.note_sequence_list[self.h] >= self.screen_height:
+                self.bad += 1
+                self.score_state = 3
+                self.h += 1
+                self.score = 0
+        
+        # print(self.score_state)
+        print(self.h)
+        # print(self.note_count)
         print(self.note_sequence_list)
-        # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
-        print(self.note_y_pos)
-        # print(self.bad)
+        # # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
+        # print(self.note_y_pos)
+        # # print(self.bad)
         # print(self.erase)
 
 
@@ -342,38 +360,26 @@ class g2(var):
         if self.over_state == 1:
             self.screen.blit(self.game_over_background2, (0,0))     # yes
 
-    # 시간대별 점수 구하기
     # 범위에 맞게 키를 눌렀는지, 점수 변수들 업데이트
-    def Score(self):
-        if 0 < self.note_y_pos[self.note_count[0]] <= self.screen_height:
-            if 0 < self.note_y_pos[self.note_count[1]] <= self.screen_height:
-                if 0 < self.note_y_pos[self.note_count[2]] <= self.screen_height:
-                    if 0 < self.note_y_pos[self.note_count[3]] <= self.screen_height:
-                        if 0 < self.note_y_pos[self.note_count[4]] <= self.screen_height:
-                            if 0 < self.note_y_pos[self.note_count[5]] <= self.screen_height:
-                                if 0 < self.note_y_pos[self.note_count[6]] <= self.screen_height:    
-                                    m = 6
-                                    for i in range(0,4):
-                                        self.score_range(m, i)
-                                m = 5
-                                for i in range(0,4):
-                                    self.score_range(m, i)
-                            m = 4
-                            for i in range(0,4):
-                                self.score_range(m, i)
-                        m = 3
-                        for i in range(0,4):
-                            self.score_range(m, i)
-                    m = 2
-                    for i in range(0,4):
-                        self.score_range(m, i)
-                m = 1
-                for i in range(0,4):
-                    self.score_range(m, i)
-            m = 0
-            for i in range(0,4):
-                self.score_range(m, i)
-
+    def Score(self, k):
+        if self.note_y_pos[self.h] < self.screen_height:
+            if self.key_press[k] == 1:  # 몇번 째 키를 눌렀는지
+                if self.note_list[self.h][k] == self.note_state:    # 키값 위치가 노트위치랑 일치하는지
+                    # Exerlent
+                    if self.Exerlent_range[0] <= self.note_y_pos[self.h] < self.Exerlent_range[1]: # 범위에 맞게
+                        self.Exerlent += 1
+                        self.note_list[self.h][k] = 0
+                        self.score_state = 1
+                        self.h += 1
+                        self.score += 1
+                    # good
+                    if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.h] < self.Exerlent_range[0]: # 범위에 맞게
+                        self.good += 1
+                        self.note_list[self.h][k] = 0
+                        self.score_state = 2
+                        self.h += 1
+                        self.score += 1
+        print(self.h)
         # print("Exerlent = "+ str(self.Exerlent))
         # print("good = "+ str(self.good))
         # print("bad = "+ str(self.bad))
@@ -383,74 +389,74 @@ class g2(var):
         # print(self.note_y_pos[self.note_count[0]], self.note_y_pos[self.note_count[1]], self.note_y_pos[self.note_count[2]], self.note_y_pos[self.note_count[3]])
     
 
-    def bad_score(self, m):
-        if self.note_y_pos[self.note_count[m]] >= self.screen_height:
-            self.bad += 1
+    # def bad_score(self, m):
+    #     if self.note_y_pos[self.note_count[m]] >= self.screen_height:
+    #         self.bad += 1
             # self.score_state = 3
             
-    def score_range(self, m, k):
+    # def score_range(self, m, k):
         # if len(self.note_sequence_list[m]) < 
-        if k == 0:
-            if self.note_list[self.note_count[m]][k] == self.note_state:
-                # Exerlent
-                if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
-                    if self.key_press[k] == 1:
-                        self.Exerlent += 1
-                        self.note_list[self.note_count[m]][k] = 1
-                        self.score_state = 1
-                # good
-                if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
-                    if self.key_press[k] == 1:
-                        self.good += 1
-                        self.note_list[self.note_count[m]][k] = 0
-                        self.score_state = 2
-        if k == 1:
-             if self.note_list[self.note_count[m]][k] == self.note_state:
-                 # Exerlent
-                if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
-                    if self.key_press[k] == 1:
-                        self.Exerlent += 1
-                        self.note_list[self.note_count[m]][k] = 1
-                        self.score_state = 1
-                # good
-                if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
-                    if self.key_press[k] == 1:
-                        self.good += 1
-                        self.note_list[self.note_count[m]][k] = 0
-                        self.score_state = 2
+        # if k == 0:
+        #     if self.note_list[self.note_count[m]][k] == self.note_state:
+        #         # Exerlent
+        #         if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
+        #             if self.key_press[k] == 1:
+        #                 self.Exerlent += 1
+        #                 self.note_list[self.note_count[m]][k] = 1
+        #                 self.score_state = 1
+        #         # good
+        #         if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
+        #             if self.key_press[k] == 1:
+        #                 self.good += 1
+        #                 self.note_list[self.note_count[m]][k] = 0
+        #                 self.score_state = 2
+        # if k == 1:
+        #      if self.note_list[self.note_count[m]][k] == self.note_state:
+        #          # Exerlent
+        #         if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
+        #             if self.key_press[k] == 1:
+        #                 self.Exerlent += 1
+        #                 self.note_list[self.note_count[m]][k] = 1
+        #                 self.score_state = 1
+        #         # good
+        #         if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
+        #             if self.key_press[k] == 1:
+        #                 self.good += 1
+        #                 self.note_list[self.note_count[m]][k] = 0
+        #                 self.score_state = 2
 
-        if k == 2:
-             if self.note_list[self.note_count[m]][k] == self.note_state:
-                # Exerlent
-                if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
-                    if self.key_press[k] == 1:
-                        self.Exerlent += 1
-                        self.note_list[self.note_count[m]][k] = 1
-                        self.score_state = 1
-                # good
-                if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
-                    if self.key_press[k] == 1:
-                        self.good += 1
-                        self.note_list[self.note_count[m]][k] = 0
-                        self.score_state = 2
+        # if k == 2:
+        #      if self.note_list[self.note_count[m]][k] == self.note_state:
+        #         # Exerlent
+        #         if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
+        #             if self.key_press[k] == 1:
+        #                 self.Exerlent += 1
+        #                 self.note_list[self.note_count[m]][k] = 1
+        #                 self.score_state = 1
+        #         # good
+        #         if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
+        #             if self.key_press[k] == 1:
+        #                 self.good += 1
+        #                 self.note_list[self.note_count[m]][k] = 0
+        #                 self.score_state = 2
 
-        if k == 3:
-             if self.note_list[self.note_count[m]][k] == self.note_state:
-                 # Exerlent
-                if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
-                    if self.key_press[k] == 1:
-                        self.Exerlent += 1
-                        self.note_list[self.note_count[m]][k] = 1
-                        self.score_state = 1
-                # good
-                if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
-                    if self.key_press[k] == 1:
-                        self.good += 1
-                        self.note_list[self.note_count[m]][k] = 0
-                        self.score_state = 2
+        # if k == 3:
+        #      if self.note_list[self.note_count[m]][k] == self.note_state:
+        #          # Exerlent
+        #         if self.Exerlent_range[0] <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[1]:
+        #             if self.key_press[k] == 1:
+        #                 self.Exerlent += 1
+        #                 self.note_list[self.note_count[m]][k] = 1
+        #                 self.score_state = 1
+        #         # good
+        #         if self.Exerlent_range[0] - self.approximate <= self.note_y_pos[self.note_count[m]] < self.Exerlent_range[0]:
+        #             if self.key_press[k] == 1:
+        #                 self.good += 1
+        #                 self.note_list[self.note_count[m]][k] = 0
+        #                 self.score_state = 2
     # 노트 그리기 함수화
     def auto_draw(self, j):
-        if self.note_y_pos[j] <=  self.screen_height: 
+        if self.note_y_pos[j] <=  self.screen_height:
             if self.note_list[j][0] == self.note_state:
                 self.screen.blit(self.side_note, (self.note1_x_pos, self.note_y_pos[j]))
             if self.note_list[j][1] == self.note_state:
